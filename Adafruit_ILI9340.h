@@ -10,7 +10,9 @@
   please support Adafruit and open-source hardware by purchasing
   products from Adafruit!
 
-  Written by Limor Fried/Ladyada for Adafruit Industries.
+  Written by Limor Fried/Ladyada 
+
+for Adafruit Industries.
   MIT license, all text above must be included in any redistribution
  ****************************************************/
 
@@ -26,15 +28,14 @@
 #include <Adafruit_GFX.h>
 
 #if defined(__SAM3X8E__)
-  #include <include/pio.h>
+#include <include/pio.h>
   #define PROGMEM
   #define pgm_read_byte(addr) (*(const unsigned char *)(addr))
   #define pgm_read_word(addr) (*(const unsigned short *)(addr))
   typedef unsigned char prog_uchar;
-#elif defined(__AVR__)
+#endif
+#ifdef __AVR__
   #include <avr/pgmspace.h>
-#elif defined(ESP8266)
-  #include <pgmspace.h>
 #endif
 
 
@@ -137,7 +138,9 @@ class Adafruit_ILI9340 : public Adafruit_GFX {
            fillRect(int16_t x, int16_t y, int16_t w, int16_t h,
              uint16_t color),
            setRotation(uint8_t r),
-           invertDisplay(boolean i);
+           invertDisplay(boolean i),
+           displayBitmap(const char *filename),
+           displayPattern(uint16_t colour);
   uint16_t Color565(uint8_t r, uint8_t g, uint8_t b);
 
   /* These are not for current use, 8-bit protocol only! */
@@ -150,6 +153,7 @@ class Adafruit_ILI9340 : public Adafruit_GFX {
   */  
 
   void     spiwrite(uint8_t),
+    spiwrite16(uint16_t),
     writecommand(uint8_t c),
     writedata(uint8_t d),
     commandList(uint8_t *addr);
@@ -161,7 +165,7 @@ class Adafruit_ILI9340 : public Adafruit_GFX {
 
 
   boolean  hwSPI;
-#ifdef __AVR__  
+#if defined (__AVR__) || defined (ESP8266)
   volatile uint8_t *mosiport, *clkport, *dcport, *rsport, *csport;
   uint8_t  _cs, _dc, _rst, _mosi, _miso, _sclk,
            mosipinmask, clkpinmask, cspinmask, dcpinmask;
